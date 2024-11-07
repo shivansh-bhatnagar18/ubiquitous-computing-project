@@ -1,6 +1,8 @@
 #importing all the libraries essential in micropython
 
 import sensor, image, time, math
+import tflite_runtime.interpreter as tflite
+import numpy as np
 
 #------------------
 
@@ -52,6 +54,13 @@ sensor.set_pixformat(sensor.GRAYSCALE)  # or RGB565 if needed
 sensor.set_framesize(sensor.QVGA)       # Set resolution
 sensor.skip_frames(time=2000)
 sensor.set_auto_gain(False)             # Turn off auto gain for color tracking
+
+interpreter = tflite.Interpreter(model_path="model/ocr_model.tflite")
+interpreter.allocate_tensors()
+
+# Input/output details
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
 
 dials = []
 dials_center = []
@@ -227,3 +236,16 @@ while True:
                 lcd.display(img)
                 print("Red Indicator Detected")
 
+
+# img = camera.capture()  # Replace with your camera capture method
+# img = img.resize((28, 28)).convert('L')  # Resize and grayscale
+# input_data = np.array(img).reshape(1, 28, 28, 1).astype(np.float32)
+
+# # Run inference
+# interpreter.set_tensor(input_details[0]['index'], input_data)
+# interpreter.invoke()
+# output_data = interpreter.get_tensor(output_details[0]['index'])
+
+# # Interpret output (e.g., digit prediction)
+# predicted_digit = np.argmax(output_data)
+# print(f"Predicted digit: {predicted_digit}")
